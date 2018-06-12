@@ -2,11 +2,19 @@
 
 /**
   path.resolve()
+
+  Gets the path to something.
+
   https://nodejs.org/api/path.html#path_path_resolve_paths
  */
 
 /**
+ * 
   array.map()
+
+  Creates a new array by doing a certain function on each element of
+  the old array.
+
   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
  */
 
@@ -15,8 +23,14 @@ const fs = require('fs')
 const {
   fr,
   getAppdataPath,
-  ensureAppdataDirExists
+  ensureAppdataDirExists,
+  drawRects
+
 } = require('./commons')
+
+//added by me
+const detector = fr.FaceDetector()
+
 
 fr.winKillProcessOnExit()
 
@@ -49,8 +63,8 @@ const allFiles = fs.readdirSync(dataPath)
   Looks at each class name and checks if the allFiles array contains
   a file with that name.
 
-  If it does, it appends the data path to each file name. Finally it
-  tells the face recognizer to load each image to the imagesByClass array
+  If it does, it creates a 2 dimensional array of the classes
+  and their images. Each element in each row is an image.
  */
 const imagesByClass = classNames.map(c =>
   allFiles
@@ -59,10 +73,28 @@ const imagesByClass = classNames.map(c =>
     .map(fp => fr.loadImage(fp))
 )
 
-
+// for each image in the imagesByClass array, grab only the amount of images want to train with
 const trainDataByClass = imagesByClass.map(imgs => imgs.slice(0, numTrainFaces))
 
+// for each image in the imagesByClass array, grab the amount of images we specify
 const testDataByClass = imagesByClass.map(imgs => imgs.slice(numTrainFaces))
+
+console.log('logging testDataByClass');
+console.log(testDataByClass);
+
+//added by me for testing
+// for (i = 0 ; i < testDataByClass[1].length ; i++) {
+//   let image = testDataByClass[1][i];
+
+//   const result = detector.locateFaces(image);
+//   const faceRects = result.map(mmodRect => mmodRect.rect)
+
+//   const win1 = new fr.ImageWindow()
+//   win1.setImage(image)
+
+//   drawRects(win1, faceRects);
+// }
+
 
 if (!fs.existsSync(trainedModelFilePath)) {
   console.log('%s not found, start training recognizer...', trainedModelFile)
