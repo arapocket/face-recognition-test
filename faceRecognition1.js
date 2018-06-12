@@ -1,23 +1,3 @@
-//Unfamiliar Syntax//
-
-/**
-  path.resolve()
-
-  Gets the path to something.
-
-  https://nodejs.org/api/path.html#path_path_resolve_paths
- */
-
-/**
- * 
-  array.map()
-
-  Creates a new array by doing a certain function on each element of
-  the old array.
-
-  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
- */
-
 const path = require('path')
 const fs = require('fs')
 const {
@@ -38,7 +18,7 @@ fr.winKillProcessOnExit()
 ensureAppdataDirExists()
 
 // how many faces to feed into algorithm to train
-const numTrainFaces = 5
+const numTrainFaces = 1
 
 //data will be saved to this file
 const trainedModelFile = `faceRecognition1Model_t${numTrainFaces}_150.json`
@@ -76,11 +56,8 @@ const imagesByClass = classNames.map(c =>
 // for each image in the imagesByClass array, grab only the amount of images want to train with
 const trainDataByClass = imagesByClass.map(imgs => imgs.slice(0, numTrainFaces))
 
-// for each image in the imagesByClass array, grab the amount of images we specify
-const testDataByClass = imagesByClass.map(imgs => imgs.slice(numTrainFaces))
-
-console.log('logging testDataByClass');
-console.log(testDataByClass);
+// for each image in the imagesByClass array, grab the amount of images we specify and create a new array
+const testDataByClass = imagesByClass.map(imgs => imgs.slice(0, numTrainFaces))
 
 //added by me for testing
 // for (i = 0 ; i < testDataByClass[1].length ; i++) {
@@ -96,10 +73,18 @@ console.log(testDataByClass);
 // }
 
 
+// Looks to see if the path we defined earlier exists.
 if (!fs.existsSync(trainedModelFilePath)) {
   console.log('%s not found, start training recognizer...', trainedModelFile)
 
+  //no idea what this is doing
   trainDataByClass.forEach((faces, label) => {
+
+    console.log('logging faces')
+    console.log(faces)
+    console.log('logging label');
+    console.log(label);
+
     const name = classNames[label]
     recognizer.addFaces(faces, name)
   })
@@ -114,9 +99,14 @@ if (!fs.existsSync(trainedModelFilePath)) {
   console.log(recognizer.getDescriptorState())
 }
 
+//no idea what this is doing
 const errors = classNames.map(_ => 0)
+
 testDataByClass.forEach((faces, label) => {
+
+  // set the name to the row name
   const name = classNames[label]
+
   console.log()
   console.log('testing %s', name)
   faces.forEach((face, i) => {
